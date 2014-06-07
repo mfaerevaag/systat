@@ -1,27 +1,19 @@
-{-# LANGUAGE  RecordWildCards, DeriveDataTypeable #-}
+{-# LANGUAGE RecordWildCards #-}
 module Main where
 
 import Prelude hiding (mod)
-import System.Console.CmdArgs
+import System.Environment (getArgs, withArgs)
 
+import Systat.Opts
 import Systat.Driver
 
-data SystatArgs = SystatArgs {
-  mod  :: String
-, list :: Bool
-} deriving (Data, Typeable, Show)
-
-systatArgs = cmdArgsMode $ SystatArgs {
-  mod = "" &= argPos 0 &= typ "module"
-, list = False &= help "List aveliable modules"
-}
-       &= summary "Systat - System stats"
-
+main :: IO ()
 main = do
-  SystatArgs {..} <- cmdArgsRun systatArgs
+    args <- getArgs
 
-  if list
-    then do
-         putStrLn "Modules:"
-         putStrLn "\tdatetime"
-    else run mod
+    -- print help if no arguments
+    opts <- (if null args then withArgs ["--help"] else id) getOpts
+
+    optHandler opts
+
+    run opts
