@@ -1,0 +1,19 @@
+name:                systat
+version:             0.0.1
+license:             MIT
+license-file:        LICENSE
+author:              Markus Færevaag
+maintainer:          mfaerevaag
+category:            System
+build-type:          Simple
+cabal-version:       >=1.10
+
+source-repository    head
+  type:              git
+  location:          git@github.com:mfaerevaag/systat.git
+
+executable           systat
+  main-is:           Main.hs
+  build-depends:     base, process, cmdargs
+  hs-source-dirs:    src
+  default-language:  Haskell2010
