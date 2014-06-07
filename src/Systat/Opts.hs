@@ -4,6 +4,7 @@ module Systat.Opts where
 import Prelude hiding (mod)
 import System.Console.CmdArgs
 import System.Exit
+import System.Environment (getArgs, withArgs)
 import Control.Monad (when, unless)
 import Text.Printf
 
@@ -24,9 +25,6 @@ systatOpts = SystatOpts {
 , list  = False &= help "List aveliable modules"
 , color = False &= help "Use color"
 }
-
-getOpts :: IO SystatOpts
-getOpts = cmdArgs $ systatOpts
   &= summary (_NAME ++ " version " ++ _VERSION)
   &= help _ABOUT
   &= helpArg [explicit, name "help", name "h"]
@@ -45,3 +43,15 @@ optHandler SystatOpts {..}  = do
     putStrLn $ "Error: Module '" ++ mod ++ "' not found"
     putStrLn "use --list option to get possible modules"
     exitWith (ExitFailure 1)
+
+getOpts :: IO SystatOpts
+getOpts = do
+  args <- getArgs
+
+  -- print help if no arguments
+  opts <- (if null args then withArgs ["--help"] else id) $ cmdArgs systatOpts
+
+  -- check opts
+  optHandler opts
+
+  return opts
