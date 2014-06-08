@@ -3,9 +3,10 @@ module Systat.Processor ( runCommand ) where
 import System.Process hiding (runCommand)
 import System.Exit
 import Text.Printf
+import Data.Text
 
 processData :: String -> String
-processData = (id :: String -> String)
+processData = unpack . strip . pack
 
 runCommand :: String -> [String] -> IO String
 runCommand command args = do

@@ -3,9 +3,10 @@ module Systat.Module where
 
 import Systat.Processor
 
-_GREEN  = "GREEN"
-_YELLOW = "YELLOW"
-_RED    = "RED"
+_RED    = "\x1b[1;31m"
+_GREEN  = "\x1b[1;32m"
+_YELLOW = "\x1b[1;33m"
+_NOC    = "\x1b[1;0m"
 
 data Module = Module {
   name    :: String
@@ -13,34 +14,30 @@ data Module = Module {
 , command :: String
 , args    :: [String]
 , parse   :: String -> String
-, state   :: Maybe ModuleState
 }
 
 instance Show Module where
   show Module {..} = name
 
-data ModuleState = Good
+data ModuleState = Neutral
+                 | Good
                  | Warning
                  | Critical
                  deriving (Show, Eq)
 
-runModule :: Module -> Bool -> IO String
+runModule :: Module -> Bool -> IO (ModuleState, String)
 runModule Module {..} usePrefix = do
     output <- runCommand command args
     let parsed = parse output
     let prefixed = prefix ++ parsed
+    let state = Good
 
-    -- let colored = if useColor
-    --               then addColor state prefixed
-    --               else prefixed
+    return (state, if usePrefix then prefixed else output)
 
-    return (if usePrefix then prefixed else output)
-
-addColor :: Maybe ModuleState -> String -> String
-addColor state input = color ++ " " ++ input ++ " " ++ color
-  where color =  case state of
-          Just a -> case a of
-            Good     -> _GREEN
-            Warning  -> _YELLOW
-            Critical -> _RED
-          Nothing -> ""
+addColor :: ModuleState -> String -> String
+addColor state input = color ++ input ++ _NOC
+  where color = case state of
+          Good     -> _GREEN
+          Warning  -> _YELLOW
+          Critical -> _RED
+          Neutral  -> ""

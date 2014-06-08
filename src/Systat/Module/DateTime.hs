@@ -9,7 +9,6 @@ dateTime = Module {
 , command = "date"
 , args    = ["+%d/%m %H:%M:%S"]
 , parse   = id
-, state   = Nothing
 }
 
 --parseInput input =

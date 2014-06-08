@@ -20,12 +20,11 @@ exec SystatOpts {..} = do
   when list $ listModules >> exitSuccess
 
   -- run module
-  output <- case find ((== mod) . show) modules of
+  (state, output) <- case find ((== mod) . show) modules of
     Just m -> runModule m prefix
     Nothing -> exitWith (ExitFailure 1)
 
-  print battery
-  putStr output -- $ if color then addColor state output else output
+  putStrLn $ if color then addColor state output else output
   exitSuccess
 
 listModules :: IO ()

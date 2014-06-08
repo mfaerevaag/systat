@@ -11,7 +11,6 @@ battery = Module {
 , command = "acpi"
 , args    = ["-b"]
 , parse   = id
-, state   = Nothing
 }
 
 -- parseInput :: String -> String
