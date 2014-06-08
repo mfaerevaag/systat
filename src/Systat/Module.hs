@@ -1,9 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable, RecordWildCards #-}
-module Systat.Module (
-  Module (..)
-, ModuleType (..)
-, runModule
-) where
+module Systat.Module where
 
 import System.Console.CmdArgs hiding (args)
 
@@ -13,18 +9,21 @@ data ModuleType = Battery
                 | DateTime
                 deriving (Show, Data, Typeable)
 
+class Run a where
+  run :: a -> Bool -> IO String
+
+instance Run Module where
+  run Module {..} usePrefix = do
+    output <- runCommand command args
+    let parsed = parse output
+
+    return $ parse $ if usePrefix
+                     then prefix ++ parsed
+                     else parsed
+
 data Module = Module {
   prefix :: String
 , command :: String
 , args :: [String]
 , parse :: String -> String
 }
-
-runModule :: Module -> Bool -> IO String
-runModule Module {..} usePrefix = do
-  output <- runCommand command args
-  let parsed = parse output
-
-  return $ parse $ if usePrefix
-                   then prefix ++ parsed
-                   else parsed

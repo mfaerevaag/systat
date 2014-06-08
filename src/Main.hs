@@ -6,4 +6,4 @@ import Systat.Opts
 import Systat.Driver
 
 main :: IO ()
-main = getOpts >>= run
+main = getOpts >>= exec
