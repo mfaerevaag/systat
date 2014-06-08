@@ -32,7 +32,7 @@ runModule Module {..} usePrefix = do
     let prefixed = prefix ++ parsed
     let state = Good
 
-    return (state, if usePrefix then prefixed else output)
+    return (state, if usePrefix then prefixed else parsed)
 
 addColor :: ModuleState -> String -> String
 addColor state input = color ++ input ++ _NOC

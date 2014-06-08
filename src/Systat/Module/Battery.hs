@@ -1,6 +1,6 @@
 module Systat.Module.Battery (battery) where
 
---import Text.Regex.Posix
+import Text.Regex.Posix
 
 import Systat.Module
 
@@ -10,12 +10,14 @@ battery = Module {
 , prefix  = "⚡: "
 , command = "acpi"
 , args    = ["-b"]
-, parse   = id
+, parse   = parseInput
 }
 
--- parseInput :: String -> String
--- parseInput input = do
---   reg <- input =~ pattern :: String
---   putStrLn reg
---   return input
---   where pattern = "Battery [0-9]: (.+), (.+)%, (.+) (remaining)?"
+parseInput :: String -> String
+parseInput input =
+  let out = tail $ head (input =~ pattern :: [[String]])
+      state = if head out == "Charging" then "+" else "-"
+      percent = out !! 1
+      time = " (" ++ out !! 2 ++ ")"
+  in state ++ percent ++ "%" ++ (if state == "-" then time else "")
+  where pattern = "Battery [0-9]: (.+), (.+)%, (.+) (remaining)?"

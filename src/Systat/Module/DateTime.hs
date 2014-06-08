@@ -10,5 +10,3 @@ dateTime = Module {
 , args    = ["+%d/%m %H:%M:%S"]
 , parse   = id
 }
-
---parseInput input =
