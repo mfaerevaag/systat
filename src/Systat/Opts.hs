@@ -5,7 +5,7 @@ import Prelude hiding (mod)
 import System.Console.CmdArgs
 import System.Exit
 import System.Environment (getArgs, withArgs)
-import Control.Monad (when, unless)
+import Control.Monad
 import Text.Printf
 
 import Systat.Module hiding (args)
@@ -17,18 +17,18 @@ _MODULES = [ ("datetime", "system date and time"),
              ("battery",  "battery state") ]
 
 data SystatOpts = SystatOpts {
-  mod :: ModuleInstance
+  mod :: Maybe ModuleType
 , prefix :: Bool
 , list :: Bool
 , color :: Bool
-} deriving (Data, Typeable, Show)
+} deriving (Show, Data, Typeable)
 
 systatOpts :: SystatOpts
 systatOpts = SystatOpts {
-  mod    = Null  &= typ "module" &= args
-, prefix = False &= help "Prefix output with unicode symbol"
-, list   = False &= help "List aveliable modules"
-, color  = False &= help "Use color flag"
+  mod    = Nothing &= typ "module" &= args
+, prefix = False   &= help "Prefix output with unicode symbol"
+, list   = False   &= help "List aveliable modules"
+, color  = False   &= help "Use color flag"
 }
   &= summary (_NAME ++ " version " ++ _VERSION)
   &= help _ABOUT
@@ -42,15 +42,6 @@ optHandler opts@SystatOpts {..}  = do
     putStrLn "Modules:"
     mapM_ (uncurry (printf "\t%s - %s\n")) _MODULES
     exitSuccess
-
-  -- check for module
-  -- when (null mod) $ putStrLn "Error: No module given" >> exitWith (ExitFailure 1)
-
-  -- check if module exists
-  -- unless (mod `elem` map fst _MODULES) $ do
-  --   putStrLn $ "Error: Module '" ++ mod ++ "' not found"
-  --   putStrLn "use --list option to get possible modules"
-  --   exitWith (ExitFailure 1)
 
   return opts
 

@@ -12,9 +12,10 @@ import Systat.Modules.Battery
 run :: SystatOpts -> IO ()
 run SystatOpts {..} = do
   output <- case mod of
-    DateTime -> runModule dateTime prefix
-    Battery -> runModule battery prefix
-    Null -> exitWith (ExitFailure 1)
+    Just a -> case a of
+      DateTime -> runModule dateTime prefix
+      Battery -> runModule battery prefix
+    Nothing -> exitWith (ExitFailure 1)
 
   putStr output
   exitSuccess

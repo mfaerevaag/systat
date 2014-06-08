@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable, RecordWildCards #-}
 module Systat.Module (
   Module (..)
-, ModuleInstance (..)
+, ModuleType (..)
 , runModule
 ) where
 
@@ -9,10 +9,9 @@ import System.Console.CmdArgs hiding (args)
 
 import Systat.Processor
 
-data ModuleInstance = Battery
-                    | DateTime
-                    | Null
-                    deriving (Show, Data, Typeable)
+data ModuleType = Battery
+                | DateTime
+                deriving (Show, Data, Typeable)
 
 data Module = Module {
   prefix :: String
