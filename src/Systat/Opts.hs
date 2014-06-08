@@ -11,38 +11,46 @@ import Text.Printf
 _NAME    = "systat"
 _VERSION = "0.0.1"
 _ABOUT   = "Tool for getting system stats"
-_MODULES = [ ("datetime", "system date and time") ]
+_MODULES = [ ("datetime", "system date and time"),
+             ("battery",  "battery state") ]
 
 data SystatOpts = SystatOpts {
   mod :: String
+, prefix :: Bool
 , list :: Bool
 , color :: Bool
 } deriving (Data, Typeable, Show)
 
 systatOpts :: SystatOpts
 systatOpts = SystatOpts {
-  mod   = def   &= typ "module" &= args
-, list  = False &= help "List aveliable modules"
-, color = False &= help "Use color"
+  mod    = def   &= typ "module" &= args
+, prefix = False &= help "Prefix output with unicode symbol"
+, list   = False &= help "List aveliable modules"
+, color  = False &= help "Use color flag"
 }
   &= summary (_NAME ++ " version " ++ _VERSION)
   &= help _ABOUT
   &= helpArg [explicit, name "help", name "h"]
   &= program _NAME
 
-optHandler :: SystatOpts -> IO ()
-optHandler SystatOpts {..}  = do
+optHandler :: SystatOpts -> IO SystatOpts
+optHandler opts@SystatOpts {..}  = do
+  -- list modules
   when list $ do
     putStrLn "Modules:"
     mapM_ (uncurry (printf "\t%s - %s\n")) _MODULES
     exitSuccess
 
+  -- check for module
   when (null mod) $ putStrLn "Error: No module given" >> exitWith (ExitFailure 1)
 
+  -- check if module exists
   unless (mod `elem` map fst _MODULES) $ do
     putStrLn $ "Error: Module '" ++ mod ++ "' not found"
     putStrLn "use --list option to get possible modules"
     exitWith (ExitFailure 1)
+
+  return opts
 
 getOpts :: IO SystatOpts
 getOpts = do
@@ -53,5 +61,3 @@ getOpts = do
 
   -- check opts
   optHandler opts
-
-  return opts
