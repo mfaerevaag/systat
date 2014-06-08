@@ -1,14 +1,11 @@
 module Systat.Modules.DateTime (dateTime) where
 
-import Systat.Processor
+import Systat.Module
 
-prefix  = "🕐: "
-command = "date"
-args    = ["+%d/%m %H:%M:%S"]
-
-dateTime :: Bool -> IO String
-dateTime usePrefix = do
-  output <- runCommand command args
-  return $ if usePrefix
-           then prefix ++ output
-           else output
+dateTime :: Module
+dateTime = Module {
+  prefix  = "🕐: "
+, command = "date"
+, args    = ["+%d/%m %H:%M:%S"]
+, parse   = id
+}
