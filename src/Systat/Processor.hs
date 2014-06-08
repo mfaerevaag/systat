@@ -1,4 +1,4 @@
-module Systat.Processor ( runCommand ) where
+module Systat.Processor (runCommand) where
 
 import System.Process hiding (runCommand)
 import System.Exit

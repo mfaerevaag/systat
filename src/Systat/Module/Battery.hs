@@ -13,11 +13,18 @@ battery = Module {
 , parse   = parseInput
 }
 
-parseInput :: String -> String
-parseInput input =
+parseInput :: String -> IO (ModuleState, String)
+parseInput input = do
   let out = tail $ head (input =~ pattern :: [[String]])
-      state = if head out == "Charging" then "+" else "-"
-      percent = out !! 1
+      charging = head out == "Charging"
+      percent = read (out !! 1) :: Int
       time = " (" ++ out !! 2 ++ ")"
-  in state ++ percent ++ "%" ++ (if state == "-" then time else "")
+      result = (if charging then "+" else "-") ++ show percent ++ "%" ++ (if not charging then time else "")
+      state = case percent of
+        n | n < 10 -> Critical
+          | n < 20 -> Warning
+        _ -> Good
+
+  return (state, result)
+
   where pattern = "Battery [0-9]: (.+), (.+)%, (.+) (remaining)?"

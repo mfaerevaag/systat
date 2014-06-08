@@ -8,5 +8,5 @@ dateTime = Module {
 , prefix  = "🕐: "
 , command = "date"
 , args    = ["+%d/%m %H:%M:%S"]
-, parse   = id
+, parse   = \x -> return (Neutral, x)
 }

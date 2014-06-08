@@ -13,7 +13,7 @@ data Module = Module {
 , prefix  :: String
 , command :: String
 , args    :: [String]
-, parse   :: String -> String
+, parse   :: String -> IO (ModuleState, String)
 }
 
 instance Show Module where
@@ -28,9 +28,8 @@ data ModuleState = Neutral
 runModule :: Module -> Bool -> IO (ModuleState, String)
 runModule Module {..} usePrefix = do
     output <- runCommand command args
-    let parsed = parse output
+    (state, parsed) <- parse output
     let prefixed = prefix ++ parsed
-    let state = Good
 
     return (state, if usePrefix then prefixed else parsed)
 
@@ -40,4 +39,4 @@ addColor state input = color ++ input ++ _NOC
           Good     -> _GREEN
           Warning  -> _YELLOW
           Critical -> _RED
-          Neutral  -> ""
+          Neutral  -> _NOC
